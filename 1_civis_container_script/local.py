@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from upload import ABUploader
 from surveygizmo import SurveyGizmo
 import pandas as pd
@@ -9,13 +8,13 @@ from gspread_dataframe import set_with_dataframe, get_as_dataframe
 import gspread
 import dropbox
 
-load_dotenv()
-
+# secret env variables in Civis
 api_token = os.environ['API_TOKEN']
 api_token_secret = os.environ['API_TOKEN_SECRET']
 dbx_token = os.environ['DROPBOX_TOKEN']
 spreadsheet_id = os.environ['SPREADSHEET_ID']
 json_str = os.environ['JSON_STR']
+survey_id = os.environ['SURVEY_ID']
 
 def upper_to_proper_case(s):
     """
@@ -35,43 +34,47 @@ def to_dropbox(dataframe, path, token):
         mode=dropbox.files.WriteMode.overwrite
     )
 
+# create SG api client
 client = SurveyGizmo(
     api_version='v5',
     api_token = api_token,
     api_token_secret = api_token_secret
 )
 
-filtered = client.api.surveyresponse.filter('status', '=', 'Complete')
-survey_id = os.environ['SURVEY_ID']
+# create empty dfs
 session_df = pd.DataFrame(columns = ['session_id'])
 df = pd.DataFrame(columns = ['date_submitted', 'session_id', 'first_name', 'last_name', 'home_addr', 'home_city',
 'home_state', 'home_zip', 'email', 'phone', 'mass_texts', 'engagement', 'studio', 'team_or_dept', 'job_title',
 'work_city', 'work_state', 'facebook', 'social_media_tag_fb', 'twitter', 'social_media_tag_twitter'])
+
+# filter to only complete SG responses
+filtered = client.api.surveyresponse.filter('status', '=', 'Complete')
 response = filtered.list(survey_id, resultsperpage=500)
 total_pages = response['total_pages']
 
+# get list of session_ids from complete responses
 for page in range(1, total_pages + 1):
     response = filtered.list(survey_id, resultsperpage=500, page=page)
     for i in enumerate(response['data']):
         session_df2 = pd.DataFrame([[i[1]['session_id']]], columns = ['Session ID'])
         session_df = session_df.append(session_df2, ignore_index=True)
 
-# generate json - if there are errors here remove newlines in .env
+# generate json for connecting to Google Sheets api - if there are errors here remove newlines in .env
 json_data = json.loads(json_str)
 # the private_key needs to replace \n parsed as string literal with escaped newlines
 json_data['private_key'] = json_data['private_key'].replace('\\n', '\n')
-
 # use service_account to generate credentials object
 gclient = gspread.service_account_from_dict(json_data)
 print('GS creds authorized')
-
 ch = gclient.open_by_key(spreadsheet_id)
 print(ch.id)
 spreadsheet_url = "https://docs.google.com/spreadsheets/d/%s" % ch.id
 print(spreadsheet_url)
+# get Google Sheet of uploaded responses to compare with new responses
 worksheet = ch.get_worksheet(0)
 vf = get_as_dataframe(worksheet)
 
+# compare prev list of session_ids with current list
 old_session_ids = vf['session_id'].tolist()
 new_session_ids = session_df['Session ID'].tolist()
 old_vol_ids = [x for x in old_session_ids if str(x) != 'nan']
@@ -79,6 +82,7 @@ new_vol_ids = [x for x in new_session_ids if str(x) != 'nan']
 c = set(old_vol_ids)
 d = set(new_vol_ids)
 
+# if new survey responses, then grab relevant fields from sg api and turn into df
 if c==d:
     print('The Session ID lists are equal.')
 else:
@@ -174,6 +178,7 @@ else:
         df.loc[df['mass_texts'] == 'Opted-In', 'phone_subscribed'] = 'subscribed'
         df.loc[df['mass_texts'] == '', 'phone_subscribed'] = ''
 
+        # add new responses to prev Google Sheet
         full_df = pd.concat([df, vf])
         set_with_dataframe(worksheet, full_df)
         print('Dataframe set!')
@@ -192,15 +197,18 @@ else:
         # dd/mm/YY H:M:S
         dt_string = now.strftime("%Y-%m-%d_%H-%M-%S")
         print(dt_string)
-
+        
+        # add csvs to docker container volume
         df_entity.to_csv('/app/emp_entities_' + dt_string + '.csv', index = False)
         df_info.to_csv('/app/emp_info_' + dt_string + '.csv', index = False)
         df_twitter.to_csv('/app/emp_twitter_' + dt_string + '.csv', index = False)
 
+        # upload csvs to dropbox as archive in case an upload fails
         to_dropbox(df_entity, '/ABX CSVs/emp_entities_' + dt_string + '.csv', dbx_token)
         to_dropbox(df_info, '/ABX CSVs/emp_info_' + dt_string + '.csv', dbx_token)
         to_dropbox(df_twitter, '/ABX CSVs/emp_twitter_' + dt_string + '.csv', dbx_token)
 
+        # initialize upload process to AB
         upload_file = '/app/emp_entities_' + dt_string + '.csv' # path to test CSV
         config_file = 'config.example.yml'
         campaign_key = 'upload-test'
