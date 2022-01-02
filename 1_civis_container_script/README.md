@@ -5,3 +5,5 @@ local.py pulls recent data from SurveyGizmo sign-up and, if there are new sign-u
 config.yml files specify coordinates for mapping in ActionBuilder.
 
 upload.py specifies functions used for uploading to ActionBuilder.
+
+Run in container script by installing packages, CD to /app, and run local.py
