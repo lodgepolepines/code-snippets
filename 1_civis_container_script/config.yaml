@@ -1,0 +1,23 @@
+instance: cwa
+
+default_field_map: &default_field_map
+  id:
+    column: Upload column
+    ab_type: ID to use for matching
+  people: &default_people_map
+      session_id: Custom ID 4
+      first_name: First Name
+      last_name: Last Name
+      home_addr: Street Address
+      home_city: City
+      home_state: State
+      home_zip: Zip/Postal Code
+      email: Email
+      email_subscribed: Email Subscribed
+      phone: Phone Number
+      phone_subscribed: Phone Subscribed
+
+upload-test:
+  campaign_name: Employer
+  fields:
+    <<: *default_field_map
