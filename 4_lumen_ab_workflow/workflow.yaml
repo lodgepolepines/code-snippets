@@ -1,0 +1,280 @@
+version: '2.0'
+workflow:
+  tasks:
+    01_dues_process:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          pip install pandas==1.3.5
+          pip install openpyxl==3.0.10
+          python /app/01_dues_process.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 01_dues_process
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 02_workloc_newentities
+    02_workloc_newentities:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/02_workloc_newentities.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 02_workloc_newentities
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 03_identify_new_ab_fields
+    03_identify_new_ab_fields:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/03_identify_new_ab_fields.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 03_identify_new_ab_fields
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            CWA Locals: {{cwa_locals}}  
+            Work Locations: {{work_locations}}  
+          successEmailSubject: |-
+            New AB Fields to Add
+          successOn: true
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 04_workloc_inactive
+    04_workloc_inactive:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/04_workloc_inactive.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 04_workloc_inactive
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 05_workloc_reactivate
+    05_workloc_reactivate:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/05_workloc_reactivate.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 05_workloc_reactivate
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 06_workloc_info
+    06_workloc_info:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/06_workloc_info.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 06_workloc_info
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 07_person_info
+    07_person_info:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/07_person_info.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 07_person_info
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 08_person_address
+    08_person_address:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/08_person_address.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 08_person_address
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 09_terminations
+    09_terminations:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/09_terminations.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 09_terminations
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 10_connections_inactive
+    10_connections_inactive:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/10_connections_inactive.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 10_connections_inactive
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 11_connections_newchanged
+    11_connections_newchanged:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/11_connections_newchanged.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 11_connections_newchanged
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 12_aptify
+    12_aptify:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          python /app/12_aptify.py
+        docker_image_name: civisanalytics/datascience-python
+        name: 12_aptify
+        repo_http_uri: github.com/CWA-union/lumen-ab-workflow.git
+        repo_ref: test
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      on-success:
+        - 13_update_aptify_table
+    13_update_aptify_table:
+      action: civis.scripts.sql
+      input:
+        credential_id: 19284
+        remote_host_id: 1892
+        sql: |-
+          -- Deleting previous temp Aptify table
+          TRUNCATE TABLE org_lumen.aptify_temp;
+          -- TRUNCATE TABLE org_lumen.aptify_contact_temp;
+
+          -- Transferring df to Civis table
+          insert into org_lumen.aptify_temp select * from org_lumen.aptify_refresh;
+          -- insert into org_lumen.aptify_contact_temp select * from org_lumen.aptify_contact_refresh;
+      on-success:
+        - 14_update_duesmembership_table
+    14_update_duesmembership_table:
+      action: civis.scripts.sql
+      input:
+        credential_id: 19284
+        remote_host_id: 1892
+        sql: "insert into org_lumen.barg_membership\nwith current_file as (select\
+          \ distinct file from org_lumen.barg order by file desc limit 1)\nSELECT\
+          \ to_date(substring(barg.file, 1, 4), 'YYMM') as date, barg.firstname, barg.lastname,\
+          \ barg.unionlocal, barg.company, barg.worktourtype, barg.workstreet, barg.workcity,\
+          \ barg.workstate_acronym, t.id, t.statusname, CASE\n\tWHEN (t.statusname\
+          \ ilike 'Agency Fee Payer%' and (t.statusname ilike '%- Active -%' or t.statusname\
+          \ ilike '%On Leave%')) THEN 'AFP'\n\tWHEN (t.statusname ilike 'Non Member%'\
+          \ and (t.statusname ilike '%- Active -%' or t.statusname ilike '%On Leave%'))\
+          \ THEN 'Non-Member'\n        WHEN (t.statusname ilike 'Member%' and (t.statusname\
+          \ ilike '%- Active -%' or t.statusname ilike '%On Leave%')) THEN 'Member'\n\
+          \        ELSE NULL END AS \"member_status\",\n    barg.empid\nFROM org_lumen.barg\n\
+          LEFT JOIN vwTim_Org_Hash t ON barg.empid = t.clockid\nWHERE file\
+          \ = (select * from current_file)"
+      on-success:
+        - 15_email_job_success
+    15_email_job_success:
+      action: civis.scripts.python3
+      input:
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            New Work location Entities: **<% task("02_workloc_newentities").result.outputs[0].value.number %>**  
+            Work Location Info Total: **<% task("06_workloc_info").result.outputs[0].value.number %>**  
+            Work Location Info Updated: **<% task("06_workloc_info").result.outputs[0].value.count %>**  
+            Work Location Info Errors: **<% task("06_workloc_info").result.outputs[0].value.error_list %>**  
+            Work Location Info Inactive Total: **<% task("04_workloc_inactive").result.outputs[0].value.number %>**  
+            Work Location Info Inactive Updated: **<% task("04_workloc_inactive").result.outputs[0].value.count %>**  
+            Work Location Info Inactive Errors: **<% task("04_workloc_inactive").result.outputs[0].value.error_list %>**  
+            Work Location Info Reactivate Total: **<% task("05_workloc_reactivate").result.outputs[0].value.number %>**  
+            Work Location Info Reactivate Updated: **<% task("05_workloc_reactivate").result.outputs[0].value.count %>**  
+            Work Location Info Reactivate Errors: **<% task("05_workloc_reactivate").result.outputs[0].value.error_list %>**  
+
+            Person Info Total: **<% task("07_person_info").result.outputs[0].value.number %>**  
+            Person Barg Info Updated: **<% task("07_person_info").result.outputs[0].value.count %>**  
+            Person Barg Info Errors: **<% task("07_person_info").result.outputs[0].value.error_list %>**  
+            Person Dues Info Updated: **<% task("07_person_info").result.outputs[0].value.count2 %>**  
+            Person Dues Info Errors: **<% task("07_person_info").result.outputs[0].value.error_list2 %>**  
+            Person Address Total: **<% task("08_person_address").result.outputs[0].value.number %>**  
+            Person Address Updated: **<% task("08_person_address").result.outputs[0].value.count %>**  
+            Person Address Errors: **<% task("08_person_address").result.outputs[0].value.error_list %>**  
+            Person Terminations Info Total: **<% task("09_terminations").result.outputs[0].value.number %>**  
+            Person Terminations Updated: **<% task("09_terminations").result.outputs[0].value.count %>**  
+            Person Terminations Errors: **<% task("09_terminations").result.outputs[0].value.error_list %>**  
+
+            Connections Inactive Total: **<% task("10_connections_inactive").result.outputs[0].value.number %>**  
+            Connections Inactive Updated: **<% task("10_connections_inactive").result.outputs[0].value.count %>**  
+            Connections Inactive Errors: **<% task("10_connections_inactive").result.outputs[0].value.error_list %>**  
+            Connections New/Changed Total: **<% task("11_connections_newchanged").result.outputs[0].value.number %>**  
+            Connections New/Changed Updated: **<% task("11_connections_newchanged").result.outputs[0].value.count %>**  
+            Connections New/Changed Errors: **<% task("11_connections_newchanged").result.outputs[0].value.error_list %>**  
+
+            Aptify Total: **<% task("12_aptify").result.outputs[0].value.number %>**  
+            Aptify Updated: **<% task("12_aptify").result.outputs[0].value.count %>**  
+            Aptify Errors: **<% task("12_aptify").result.outputs[0].value.error_list %>**  
+          successEmailSubject: |-
+            Lumen ActionBuilder Dues/Barg Process Final Workflow Summary
+          successOn: true
+        source: |-
+          var = 100

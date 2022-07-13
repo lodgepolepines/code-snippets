@@ -1,0 +1,33 @@
+New Work location Entities: **<% task("02_workloc_newentities").result.outputs[0].value.number %>**
+Work Location Info Total: **<% task("06_workloc_info").result.outputs[0].value.number %>**
+Work Location Info Updated: **<% task("06_workloc_info").result.outputs[0].value.count %>**
+Work Location Info Errors: **<% task("06_workloc_info").result.outputs[0].value.error_list %>**
+Work Location Info Inactive Total: **<% task("04_workloc_inactive").result.outputs[0].value.number %>**
+Work Location Info Inactive Updated: **<% task("04_workloc_inactive").result.outputs[0].value.count %>**
+Work Location Info Inactive Errors: **<% task("04_workloc_inactive").result.outputs[0].value.error_list %>**
+Work Location Info Reactivate Total: **<% task("05_workloc_reactivate").result.outputs[0].value.number %>**
+Work Location Info Reactivate Updated: **<% task("05_workloc_reactivate").result.outputs[0].value.count %>**
+Work Location Info Reactivate Errors: **<% task("05_workloc_reactivate").result.outputs[0].value.error_list %>**
+
+Person Info Total: **<% task("07_person_info").result.outputs[0].value.number %>**
+Person Barg Info Updated: **<% task("07_person_info").result.outputs[0].value.count %>**
+Person Barg Info Errors: **<% task("07_person_info").result.outputs[0].value.error_list %>**
+Person Dues Info Updated: **<% task("07_person_info").result.outputs[0].value.count2 %>**
+Person Dues Info Errors: **<% task("07_person_info").result.outputs[0].value.error_list2 %>**
+Person Address Total: **<% task("08_person_address").result.outputs[0].value.number %>**
+Person Address Updated: **<% task("08_person_address").result.outputs[0].value.count %>**
+Person Address Errors: **<% task("08_person_address").result.outputs[0].value.error_list %>**
+Person Terminations Info Total: **<% task("09_terminations").result.outputs[0].value.number %>**
+Person Terminations Updated: **<% task("09_terminations").result.outputs[0].value.count %>**
+Person Terminations Errors: **<% task("09_terminations").result.outputs[0].value.error_list %>**
+
+Connections Inactive Total: **<% task("10_connections_inactive").result.outputs[0].value.number %>**
+Connections Inactive Updated: **<% task("10_connections_inactive").result.outputs[0].value.count %>**
+Connections Inactive Errors: **<% task("10_connections_inactive").result.outputs[0].value.error_list %>**
+Connections New/Changed Total: **<% task("11_connections_newchanged").result.outputs[0].value.number %>**
+Connections New/Changed Updated: **<% task("11_connections_newchanged").result.outputs[0].value.count %>**
+Connections New/Changed Errors: **<% task("11_connections_newchanged").result.outputs[0].value.error_list %>**
+
+Aptify Total: **<% task("12_aptify").result.outputs[0].value.number %>**
+Aptify Updated: **<% task("12_aptify").result.outputs[0].value.count %>**
+Aptify Errors: **<% task("12_aptify").result.outputs[0].value.error_list %>**
