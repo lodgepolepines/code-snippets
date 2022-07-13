@@ -1,0 +1,153 @@
+version: '2.0' 
+workflow:
+  tasks:
+    create_ecard:
+      action: civis.container_script
+      input:
+        docker_command: |-
+          pip install reportlab
+          pip install surveygizmo
+          python /app/create_ecard.py
+        docker_image_name: civisanalytics/datascience-python
+        name: app2
+        repo_http_uri: github.com/CWA-union/att-ecard.git
+        repo_ref: main
+        required_resources:
+          cpu: 1024
+          disk_space: 1.0
+          memory: 1024
+      publish:
+        d1_status: <% task().result.outputs[0].value['D1'].status %>
+        d213_status: <% task().result.outputs[0].value['D2-13'].status %>
+        d3_status: <% task().result.outputs[0].value['D3'].status %>
+        d4_status: <% task().result.outputs[0].value['D4'].status %>
+        d6_status: <% task().result.outputs[0].value['D6'].status %>
+        d7_status: <% task().result.outputs[0].value['D7'].status %>
+        d9_status: <% task().result.outputs[0].value['D9'].status %>
+      on-success:
+        - d1_email: <% $.d1_status %>
+        - d213_email: <% $.d213_status %>
+        - d3_email: <% $.d3_status %>
+        - d4_email: <% $.d4_status %>
+        - d6_email: <% $.d6_status %>
+        - d7_email: <% $.d7_status %>
+        - d9_email: <% $.d9_status %>
+
+    d1_email:
+      action: civis.scripts.python3
+      input:
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            <% task("create_ecard").result.outputs[0].value['D1'].table %>
+          successEmailSubject: |-
+            New D1 AT&T E-cards
+          successOn: true
+        source: |-
+          var = 100
+
+    d213_email:
+      action: civis.scripts.python3
+      input:
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            <% task("create_ecard").result.outputs[0].value['D2-13'].table %>
+          successEmailSubject: |-
+            New D2-13 AT&T E-cards
+          successOn: true
+        source: |-
+          var = 100
+
+    d3_email:
+      action: civis.scripts.python3
+      input:
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            <% task("create_ecard").result.outputs[0].value['D3'].table %>
+          successEmailSubject: |-
+            New D3 AT&T E-cards
+          successOn: true
+        source: |-
+          var = 100
+
+    d4_email:
+      action: civis.scripts.python3
+      input:
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            <% task("create_ecard").result.outputs[0].value['D4'].table %>
+          successEmailSubject: |-
+            New D4 AT&T E-cards
+          successOn: true
+        source: |-
+          var = 100
+
+    d6_email:
+      action: civis.scripts.python3
+      input:
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            <% task("create_ecard").result.outputs[0].value['D6'].table %>
+          successEmailSubject: |-
+            New D6 AT&T E-cards
+          successOn: true
+        source: |-
+          var = 100
+
+    d7_email:
+      action: civis.scripts.python3
+      input:
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            <% task("create_ecard").result.outputs[0].value['D7'].table %>
+          successEmailSubject: |-
+            New D7 AT&T E-cards
+          successOn: true
+        source: |-
+          var = 100
+
+    d9_email:
+      action: civis.scripts.python3
+      input:
+        notifications:
+          failureEmailAddresses:
+            - tzhu@cwa-union.org
+          failureOn: true
+          successEmailAddresses:
+            - tzhu@cwa-union.org
+          successEmailBody: |-
+            <% task("create_ecard").result.outputs[0].value['D9'].table %>
+          successEmailSubject: |-
+            New D9 AT&T E-cards
+          successOn: true
+        source: |-
+          var = 100
